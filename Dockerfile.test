@@ -1,0 +1,32 @@
+FROM debian:jessie
+
+COPY requirements.txt /app/requirements.txt
+COPY src/test/requirements.txt /app/test-requirements.txt
+
+
+RUN apt-get update && apt-get -y --no-install-recommends install \
+    git \
+    g++ \
+    python \
+    python-dev \
+    python-pip \
+    python-dbus \
+  && pip install -r /app/requirements.txt \
+  && pip install -r /app/test-requirements.txt \
+  && apt-get remove --purge --auto-remove -y \
+     gcc \
+     git \
+     g++ \
+     perl-modules \
+     python-dev \
+  && rm -rf /tmp/* /var/tmp/
+
+COPY src/ /app
+WORKDIR /app
+
+VOLUME '/build'
+
+ENTRYPOINT [ "nosetests", \
+	"--with-xunit", "--xunit-file=/build/nosetests.xml", \
+	"--with-coverage", "--cover-package=cassandras3", "--cover-xml", "--cover-xml-file=/build/coverage.xml", \
+        "test/"]

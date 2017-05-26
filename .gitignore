@@ -1,0 +1,6 @@
+build/
+dist/
+out/
+src/cassandras3.egg-info/
+.coverage
+*.pyc
