@@ -38,7 +38,7 @@ class NodeTool(object):
                     self._upload_file(
                         local_path, bucket, s3_path, table, filename)
 
-        logger.info('Successfully backed up your cassandra keyspace!')
+        print('Successfully backed up your cassandra keyspace!')
 
     def restore(self, keyspace, bucket, timestamp):
         """
@@ -65,7 +65,7 @@ class NodeTool(object):
         for table in tables:
             self.refresh(keyspace, table)
 
-        logger.info('Successfully restored your cassandra keyspace!')
+        print('Successfully restored your cassandra keyspace!')
 
     def _upload_file(self, local_path, bucket, s3_path, table, filename):
         self.s3.upload_file(local_path, bucket, '%s/%s/%s' % (
@@ -98,7 +98,7 @@ class NodeTool(object):
 
     def _snapshot(self, keyspace, tag):
         try:
-            sh.nodetool('-h', self.host, '-p', self.port).snapshot(keyspace, '-t', tag)
+            sh.nodetool('-h', self.host, '-p', self.port, 'snapshot', '-t', tag)
         except sh.ErrorReturnCode:
             logger.error('Creating snapshot failed!')
             raise
@@ -110,7 +110,7 @@ class NodeTool(object):
 
     def _refresh(self, keyspace, table):
         try:
-            sh.nodetool('-h', self.host, '-p', self.port).refresh(keyspace, table)
+            sh.nodetool('-h', self.host, '-p', self.port, 'refresh', keyspace, table)
         except sh.ErrorReturnCode:
             logger.error('Running refresh failed!')
             raise

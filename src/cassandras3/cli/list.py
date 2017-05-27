@@ -40,6 +40,6 @@ def do_list(region, keyspace, hostname, bucket):
         list_objects = s3.list_objects(
             Bucket=bucket, Prefix=prefix, Delimiter='/')
         for key in list_objects.get('CommonPrefixes'):
-            logger.info(key.get('Prefix'))
+            print(key.get('Prefix').split('/')[-2])
     except:
         logger.error('Failed to perform the s3 request.')
