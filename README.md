@@ -63,3 +63,15 @@ Note: you do not need to specify the hostname, it is useful if you want to resto
 Note: the first mount (`-v`) expects AWS to be configured correctly on the host machine. The mount is not necessary when using instance profiles.
 Note: this command assumes the data directories are currently empty, if this restore is executed over a currently running cluster it can behave unexpectedly.
 Note: `[--region us-east-1]` is optional, it is to cache the AWS client API's per region.
+
+## Development
+
+To easily develop locally without the need for docker:
+
+```
+cd ~/into/the/project/directory
+make clean build/venv
+source build/venv/bin/activate
+cd src
+python -m cassandras3.main
+```

@@ -105,6 +105,8 @@ class NodeTool(object):
         except sh.CommandNotFound:
             logger.error('Nodetool not installed!')
             raise
+        except sh.AttributeError:
+            """."""
 
     def _refresh(self, keyspace, table):
         try:
@@ -115,3 +117,5 @@ class NodeTool(object):
         except sh.CommandNotFound:
             logger.error('Nodetool not installed!')
             raise
+        except sh.AttributeError:
+            """."""
