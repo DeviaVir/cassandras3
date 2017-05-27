@@ -4,7 +4,7 @@ import os
 
 logger = logging.getLogger('cassandras3')
 
-CASSANDRA_DATA_DIR = '/var/lib/cassandra/data/'
+CASSANDRA_DATA_DIR = '/var/lib/cassandra/data'
 
 
 class NodeTool(object):
@@ -51,21 +51,26 @@ class NodeTool(object):
             keyspace, bucket))
 
         s3_path = '%s/%s/%s' % (self.hostname, keyspace, timestamp)
-        list_objects = self.s3.list_objects(
-            Bucket=bucket, Prefix=s3_path, Delimiter='/')
+        list_objects = self._folders(bucket, s3_path)
         tables = []
-        for key in list_objects.get('Contents'):
-            filename = key.get('Key')
+        for filename in list(list_objects):
             table = filename.split('/')[:-1][-1]
 
-            self._ensure_dir(table)
+            if table not in tables:
+                self._ensure_dir(table)
+                tables.append(table)
             self._download_file(bucket, filename, table)
-            tables.append(table)
 
         for table in tables:
-            self.refresh(keyspace, table)
+            self._refresh(keyspace, table)
 
         print('Successfully restored your cassandra keyspace!')
+
+    def _folders(self, bucket, prefix=''):
+        paginator = self.s3.get_paginator('list_objects_v2')
+        for result in paginator.paginate(Bucket=bucket, Prefix=prefix):
+            for item in result.get('Contents'):
+                yield item.get('Key')
 
     def _upload_file(self, local_path, bucket, s3_path, table, filename):
         self.s3.upload_file(local_path, bucket, '%s/%s/%s' % (
