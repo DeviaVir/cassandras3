@@ -32,7 +32,6 @@ And optionally push this to a public or private repository, from which every nod
 docker run -it \
 	-v $HOME/.aws:/home/.aws \
 	-v /var/lib/cassandra/data:/var/lib/cassandra/data \
-	-v /usr/bin/nodetool:/usr/bin/nodetool \
 	 cassandras3_app:latest backup --keyspace test --bucket test [--region us-east-1]
 ```
 
@@ -57,7 +56,6 @@ Note: `[--region us-east-1]` is optional, it is to cache the AWS client API's pe
 docker run -it \
 	-v $HOME/.aws:/home/.aws \
 	-v /var/lib/cassandra/data:/var/lib/cassandra/data \
-	-v /usr/bin/nodetool:/usr/bin/nodetool \
 	cassandras3_app:latest restore --hostname test --keyspace test --bucket test [--region us-east-1]
 ```
 

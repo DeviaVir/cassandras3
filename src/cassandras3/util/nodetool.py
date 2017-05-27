@@ -8,9 +8,11 @@ CASSANDRA_DATA_DIR = '/var/lib/cassandra/data/'
 
 
 class NodeTool(object):
-    def __init__(self, clients, hostname):
+    def __init__(self, clients, hostname, host='127.0.0.1', port=7199):
         self.s3 = clients.s3()
         self.hostname = hostname
+        self.host = host
+        self.port = port
 
     def backup(self, keyspace, bucket, timestamp):
         """
@@ -94,10 +96,9 @@ class NodeTool(object):
 
         return dirs.splitlines()
 
-    @staticmethod
-    def _snapshot(keyspace, tag):
+    def _snapshot(self, keyspace, tag):
         try:
-            sh.nodetool.snapshot(keyspace, '-t', tag)
+            sh.nodetool('-h', self.host, '-p', self.port).snapshot(keyspace, '-t', tag)
         except sh.ErrorReturnCode:
             logger.error('Creating snapshot failed!')
             raise
@@ -105,10 +106,9 @@ class NodeTool(object):
             logger.error('Nodetool not installed!')
             raise
 
-    @staticmethod
-    def _refresh(keyspace, table):
+    def _refresh(self, keyspace, table):
         try:
-            sh.nodetool.refresh(keyspace, table)
+            sh.nodetool('-h', self.host, '-p', self.port).refresh(keyspace, table)
         except sh.ErrorReturnCode:
             logger.error('Running refresh failed!')
             raise

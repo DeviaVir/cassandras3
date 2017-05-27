@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM cassandra:2
 
 COPY requirements.txt /app/requirements.txt
 
