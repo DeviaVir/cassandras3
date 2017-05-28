@@ -18,20 +18,22 @@ The recommended way is to give nodes that run the backups permissions to the buc
 
 ### Installation
 
-For now you can install it manually:
+On Debian-based systems, make sure you have installed the `python-pip` package.
+
+```
+pip install cassandras3
+```
+
+Or install manually:
 ```
 git clone git@github.com:DeviaVir/cassandras3.git
 cd cassandras3
 python setup.py install
 ```
 
-Later this could become a(n) (internal) PyPi package which then could be installed via:
-
-```
-pip install cassandras3
-```
-
 ### Usage
+
+Make sure `cassandra` is running, `nodetool` requires it.
 
 #### Backup
 
@@ -128,4 +130,18 @@ make clean build/venv
 source build/venv/bin/activate
 cd src
 python -m cassandras3.main
+```
+
+### Deploy new pip versions
+
+Requires a correctly set up `~/.pypirc`.
+
+Testing:
+```
+python setup.py sdist upload -r pypitest
+```
+
+Live:
+```
+python setup.py sdist upload -r pypi
 ```
