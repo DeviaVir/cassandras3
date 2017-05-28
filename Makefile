@@ -2,7 +2,7 @@ test: build/venv
 	@( . build/venv/bin/activate;  \
 	    cd src && \
 		nosetests --with-xunit --xunit-file=../build/nosetests.xml \
-			--with-coverage --cover-package=cassandras3 --cover-xml --cover-xml-file=../build/coverage.xml \
+			--with-coverage --cover-package=cassandras3 --cover-min-percentage 100 --cover-xml --cover-xml-file=../build/coverage.xml \
 			test \
 	)
 
