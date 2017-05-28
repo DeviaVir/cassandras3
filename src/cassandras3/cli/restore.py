@@ -1,7 +1,7 @@
 import logging
 
-import click
 import socket
+import click
 
 from cassandras3.aws import ClientCache
 from cassandras3.log import setup_logging

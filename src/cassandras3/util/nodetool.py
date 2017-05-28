@@ -1,6 +1,6 @@
 import logging
-import sh
 import os
+import sh
 
 logger = logging.getLogger('cassandras3')
 
@@ -8,7 +8,7 @@ CASSANDRA_DATA_DIR = '/var/lib/cassandra/data'
 
 
 class NodeTool(object):
-    def __init__(self, clients, hostname, host='127.0.0.1', port=7199):
+    def __init__(self, clients, hostname='localhost', host='127.0.0.1', port=7199):
         self.s3 = clients.s3()
         self.hostname = hostname
         self.host = host
@@ -21,8 +21,8 @@ class NodeTool(object):
         :param timestamp: Timestamp int used to identify the backup.
         :return:
         """
-        logger.debug('Backing up cassandra "%s" to bucket "%s"' % (
-            keyspace, bucket))
+        logger.debug('Backing up cassandra "%s" to bucket "%s"',
+                     keyspace, bucket)
 
         tag = '%s-%s-%s' % (self.hostname, keyspace, timestamp)
         s3_path = '%s/%s/%s' % (self.hostname, keyspace, timestamp)
@@ -30,7 +30,7 @@ class NodeTool(object):
         self._snapshot(keyspace, tag)
 
         for cass_dir in self._lookup_snapshots(tag):
-            for root, dirs, files in os.walk(cass_dir):
+            for root, _, files in os.walk(cass_dir):
                 for filename in files:
                     root_arr = root.split('/')[:-2]
                     table = root_arr[-1]
@@ -38,7 +38,8 @@ class NodeTool(object):
                     self._upload_file(
                         local_path, bucket, s3_path, table, filename)
 
-        print('Successfully backed up your cassandra keyspace!')
+        print('Successfully backed up your cassandra keyspace with backup' +
+              ' ID "%s"!' % timestamp)
 
     def restore(self, keyspace, bucket, timestamp):
         """
@@ -47,8 +48,8 @@ class NodeTool(object):
         :param timestamp: Timestamp int used to identify the backup.
         :return:
         """
-        logger.debug('Restoring cassandra "%s" from bucket "%s"' % (
-            keyspace, bucket))
+        logger.debug('Restoring cassandra "%s" from bucket "%s"',
+                     keyspace, bucket)
 
         s3_path = '%s/%s/%s' % (self.hostname, keyspace, timestamp)
         list_objects = self._folders(bucket, s3_path)
@@ -66,6 +67,19 @@ class NodeTool(object):
 
         print('Successfully restored your cassandra keyspace!')
 
+    def view(self, keyspace, bucket):
+        prefix = '%s/%s/' % (self.hostname, keyspace)
+
+        try:
+            view_objects = self.s3.list_objects(
+                Bucket=bucket, Prefix=prefix, Delimiter='/')
+            if view_objects.get('CommonPrefixes'):
+                for key in view_objects.get('CommonPrefixes'):  # pragma: no cover
+                    print(key.get('Prefix').split('/')[-2])
+        except:
+            logger.error('Failed to perform the s3 request!')
+            raise
+
     def _folders(self, bucket, prefix=''):
         paginator = self.s3.get_paginator('list_objects_v2')
         for result in paginator.paginate(Bucket=bucket, Prefix=prefix):
@@ -74,7 +88,7 @@ class NodeTool(object):
 
     def _upload_file(self, local_path, bucket, s3_path, table, filename):
         self.s3.upload_file(local_path, bucket, '%s/%s/%s' % (
-                        s3_path, table, filename))
+            s3_path, table, filename))
 
     def _download_file(self, bucket, filename, table):
         key = filename.split('/')[-1]
@@ -94,7 +108,7 @@ class NodeTool(object):
             dirs = sh.find(CASSANDRA_DATA_DIR,
                            '-name',
                            tag)
-        except sh.ErrorReturnCode:
+        except:
             logger.warn('Unable to execute find, nodetool did not create ' +
                         'snapshot?')
             dirs = ''
@@ -103,24 +117,14 @@ class NodeTool(object):
 
     def _snapshot(self, keyspace, tag):
         try:
-            sh.nodetool('-h', self.host, '-p', self.port, 'snapshot', '-t', tag)
-        except sh.ErrorReturnCode:
-            logger.error('Creating snapshot failed!')
+            sh.nodetool('-h', self.host, '-p', self.port, 'snapshot', '-t', tag, keyspace)
+        except:
+            logger.error('Command possibly unfinished due to errors!')
             raise
-        except sh.CommandNotFound:
-            logger.error('Nodetool not installed!')
-            raise
-        except sh.AttributeError:
-            """."""
 
     def _refresh(self, keyspace, table):
         try:
             sh.nodetool('-h', self.host, '-p', self.port, 'refresh', keyspace, table)
-        except sh.ErrorReturnCode:
-            logger.error('Running refresh failed!')
+        except:
+            logger.error('Command possibly unfinished due to errors!')
             raise
-        except sh.CommandNotFound:
-            logger.error('Nodetool not installed!')
-            raise
-        except sh.AttributeError:
-            """."""

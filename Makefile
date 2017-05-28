@@ -1,6 +1,7 @@
 test: build/venv
 	@( . build/venv/bin/activate;  \
 	    cd src && \
+	    coverage erase; \
 		nosetests --with-xunit --xunit-file=../build/nosetests.xml \
 			--with-coverage --cover-package=cassandras3 --cover-min-percentage 100 --cover-xml --cover-xml-file=../build/coverage.xml \
 			test \

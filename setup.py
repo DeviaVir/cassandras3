@@ -4,13 +4,13 @@ requires = [req for req in open('requirements.txt').read().splitlines()
             if not req.startswith('git')]
 
 setup(name='cassandras3',
-      version='0.0.1',
-      description='Cassandra S3 Backup, List and Restore',
+      version='0.0.8',
+      description='Cassandra S3 Backup, View and Restore',
       long_description=open('README.md').read(),
       entry_points={
           'console_scripts': ['cassandras3=cassandras3.main:run'],
       },
-      url='https://github.com/deviavir/cassandra-s3-backup-restore',
+      url='https://github.com/deviavir/cassandras3',
       author='Chase Sillevis',
       author_email='chase@sillevis.net',
       license='MIT',

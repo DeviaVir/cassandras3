@@ -45,11 +45,13 @@ cassandras3 backup --keyspace test --bucket test [--region us-east-1]
 
 Note: `[--region us-east-1]` is optional, it is to cache the AWS client API's per region.
 
-#### List
+#### View
 
 ```
-cassandras3 list --keyspace test --hostname test --bucket test [--region us-east-1]
+cassandras3 view --keyspace test --hostname test --bucket test [--region us-east-1]
 ```
+
+This will return a list of all available backups to restore from.
 
 Note: `[--region us-east-1]` is optional, it is to cache the AWS client API's per region.
 Note: you do not need to specify the hostname, it is useful if you want to list backups from a different machine.
@@ -57,9 +59,10 @@ Note: you do not need to specify the hostname, it is useful if you want to list 
 #### Restore
 
 ```
-cassandras3 --hostname test --keyspace test --bucket test [--region us-east-1]
+cassandras3 restore --backup backup-timestamp --hostname test --keyspace test --bucket test [--region us-east-1]
 ```
 
+Note: `backup-timestamp` can be retrieved via `cassandras3 view`.
 Note: `[--region us-east-1]` is optional, it is to cache the AWS client API's per region.
 Note: this command assumes the data directories are currently empty, if this restore is executed over a currently running cluster it can behave unexpectedly.
 Note: you do not need to specify the hostname, it is useful if you want to list backups from a different machine.
@@ -100,7 +103,7 @@ Note: `[--region us-east-1]` is optional, it is to cache the AWS client API's pe
 ```
 docker run -it \
 	-v $HOME/.aws:/home/.aws \
-	cassandras3_app:latest list --keyspace test --hostname test --bucket test [--region us-east-1]
+	cassandras3_app:latest view --keyspace test --hostname test --bucket test [--region us-east-1]
 ```
 
 Note: the first mount (`-v`) expects AWS to be configured correctly on the host machine. The mount is not necessary when using instance profiles.

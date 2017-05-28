@@ -11,7 +11,7 @@ optimize-ast=no
 
 [MESSAGES CONTROL]
 confidence=
-disable=broad-except,missing-docstring,locally-disabled,import-error,no-name-in-module,bare-except
+disable=broad-except,missing-docstring,locally-disabled,import-error,no-name-in-module,bare-except,superfluous-parens,no-member,invalid-name
 
 
 [REPORTS]
