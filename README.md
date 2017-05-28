@@ -1,3 +1,5 @@
+![Build Status](https://travis-ci.org/DeviaVir/cassandras3.svg)
+
 # cassandras3
 A simple tool to help you backup and restore your cassandra data to and from S3.
 
