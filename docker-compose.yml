@@ -1,11 +1,8 @@
-version: '2'
+app:
+  build: .
 
-services:
-  app:
-    build: .
-  test:
-    build:
-      context: .
-      dockerfile: Dockerfile.test
-    volumes:
-      - ./build:/build
+test:
+  build: .
+  dockerfile: Dockerfile.test
+  volumes:
+    - ./build:/build
