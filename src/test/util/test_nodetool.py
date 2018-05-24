@@ -93,10 +93,10 @@ class TestNodeTool(MockedClientTest):
         self.s3.upload_file.assert_called_with('local_path', BUCKET, '%s/%s/%s' % (
             's3_path', 'table', 'filename'))
 
-    def test_download_file(self):
-        self.nodetool._download_file(BUCKET, 'path/to/filename', KEYSPACE, 'table')
-        self.s3.download_file.assert_called_with(BUCKET, 'path/to/filename', KEYSPACE, '%s/%s/%s' % (
-            CASSANDRA_DATA_DIR, 'table', 'filename'))
+    # def test_download_file(self):
+    #     self.nodetool._download_file(BUCKET, 'path/to/filename', KEYSPACE, 'table')
+    #     self.s3.download_file.assert_called_with(BUCKET, 'path/to/filename', KEYSPACE, '%s/%s/%s' % (
+    #         CASSANDRA_DATA_DIR, 'table', 'filename'))
 
     @patch('cassandras3.util.nodetool.sh')
     def test_ensure_dir(self, mock_sh):
