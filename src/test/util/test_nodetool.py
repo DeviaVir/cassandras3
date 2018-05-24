@@ -23,6 +23,7 @@ class TestNodeTool(MockedClientTest):
         self.nodetool._snapshot = MagicMock()
         self.nodetool._lookup_snapshots = MagicMock(return_value=['test'])
         self.nodetool._upload_file = MagicMock()
+        self.nodetool._clearsnapshot = MagicMock()
         mock_walk.return_value = [
             ('/tabletest/filetest/', ('_',), ('filetest',)),
         ]
@@ -38,6 +39,7 @@ class TestNodeTool(MockedClientTest):
             '%s/%s/%s' % (self.hostname, KEYSPACE, TIMESTAMP),
             'tabletest',
             'filetest')
+        self.nodetool._clearsnapshot.assert_called_with(KEYSPACE, tag)
 
     def test_restore(self):
         self.nodetool._folders = MagicMock(return_value=[('/subdirectory/filename')])
