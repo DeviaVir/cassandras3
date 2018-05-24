@@ -41,7 +41,7 @@ class NodeTool(object):
         print('Successfully backed up your cassandra keyspace with backup' +
               ' ID "%s"!' % timestamp)
 
-        self._clearsnapshot(keyspace, tag)
+        # self._clearsnapshot(keyspace, tag)
 
     def restore(self, keyspace, bucket, timestamp):
         """
