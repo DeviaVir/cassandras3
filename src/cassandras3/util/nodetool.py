@@ -40,7 +40,7 @@ class NodeTool(object):
 
         print('Successfully backed up your cassandra keyspace with backup' +
               ' ID "%s"!' % timestamp)
-        
+
         self._clearsnapshot(keyspace, tag)
 
     def restore(self, keyspace, bucket, timestamp):
@@ -124,7 +124,7 @@ class NodeTool(object):
         except:
             logger.error('Command possibly unfinished due to errors!')
             raise
-    
+
     def _clearsnapshot(self, keyspace, tag):
         try:
             sh.nodetool('-h', self.host, '-p', self.port, 'clearsnapshot', '-t', tag, keyspace)
