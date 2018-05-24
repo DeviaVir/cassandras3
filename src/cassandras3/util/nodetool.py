@@ -65,7 +65,8 @@ class NodeTool(object):
             self._download_file(bucket, filename, keyspace, table)
 
         for table in tables:
-            self._refresh(keyspace, table)
+            table_name = table.split('-')[0]
+            self._refresh(keyspace, table_name)
 
         print('Successfully restored your cassandra keyspace!')
 
