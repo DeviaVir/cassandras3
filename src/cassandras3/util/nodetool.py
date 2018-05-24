@@ -60,7 +60,7 @@ class NodeTool(object):
             if table not in tables:
                 self._ensure_dir(table)
                 tables.append(table)
-            self._download_file(bucket, filename, table)
+            self._download_file(bucket, filename, keyspace, table)
 
         for table in tables:
             self._refresh(keyspace, table)
@@ -90,10 +90,10 @@ class NodeTool(object):
         self.s3.upload_file(local_path, bucket, '%s/%s/%s' % (
             s3_path, table, filename))
 
-    def _download_file(self, bucket, filename, table):
+    def _download_file(self, bucket, filename, keyspace, table):
         key = filename.split('/')[-1]
-        self.s3.download_file(bucket, filename, '%s/%s/%s' % (
-            CASSANDRA_DATA_DIR, table, key))
+        self.s3.download_file(bucket, filename, '%s/%s/%s/%s' % (
+            CASSANDRA_DATA_DIR, keyspace, table, key))
 
     @staticmethod
     def _ensure_dir(table):
