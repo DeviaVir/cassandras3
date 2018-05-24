@@ -41,6 +41,8 @@ class NodeTool(object):
         print('Successfully backed up your cassandra keyspace with backup' +
               ' ID "%s"!' % timestamp)
 
+        self._clearsnapshot(keyspace, tag)
+
     def restore(self, keyspace, bucket, timestamp):
         """
         Restore a backup to a specific s3 bucket with a specific timestamp.
@@ -60,10 +62,11 @@ class NodeTool(object):
             if table not in tables:
                 self._ensure_dir(table)
                 tables.append(table)
-            self._download_file(bucket, filename, table)
+            self._download_file(bucket, filename, keyspace, table)
 
         for table in tables:
-            self._refresh(keyspace, table)
+            table_name = table.split('-')[0]
+            self._refresh(keyspace, table_name)
 
         print('Successfully restored your cassandra keyspace!')
 
@@ -90,10 +93,10 @@ class NodeTool(object):
         self.s3.upload_file(local_path, bucket, '%s/%s/%s' % (
             s3_path, table, filename))
 
-    def _download_file(self, bucket, filename, table):
+    def _download_file(self, bucket, filename, keyspace, table):
         key = filename.split('/')[-1]
-        self.s3.download_file(bucket, filename, '%s/%s/%s' % (
-            CASSANDRA_DATA_DIR, table, key))
+        self.s3.download_file(bucket, filename, '%s/%s/%s/%s' % (
+            CASSANDRA_DATA_DIR, keyspace, table, key))
 
     @staticmethod
     def _ensure_dir(table):
@@ -118,6 +121,13 @@ class NodeTool(object):
     def _snapshot(self, keyspace, tag):
         try:
             sh.nodetool('-h', self.host, '-p', self.port, 'snapshot', '-t', tag, keyspace)
+        except:
+            logger.error('Command possibly unfinished due to errors!')
+            raise
+
+    def _clearsnapshot(self, keyspace, tag):
+        try:
+            sh.nodetool('-h', self.host, '-p', self.port, 'clearsnapshot', '-t', tag, keyspace)
         except:
             logger.error('Command possibly unfinished due to errors!')
             raise

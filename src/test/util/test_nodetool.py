@@ -23,6 +23,7 @@ class TestNodeTool(MockedClientTest):
         self.nodetool._snapshot = MagicMock()
         self.nodetool._lookup_snapshots = MagicMock(return_value=['test'])
         self.nodetool._upload_file = MagicMock()
+        self.nodetool._clearsnapshot = MagicMock()
         mock_walk.return_value = [
             ('/tabletest/filetest/', ('_',), ('filetest',)),
         ]
@@ -38,6 +39,7 @@ class TestNodeTool(MockedClientTest):
             '%s/%s/%s' % (self.hostname, KEYSPACE, TIMESTAMP),
             'tabletest',
             'filetest')
+        self.nodetool._clearsnapshot.assert_called_with(KEYSPACE, tag)
 
     def test_restore(self):
         self.nodetool._folders = MagicMock(return_value=[('/subdirectory/filename')])
@@ -51,7 +53,7 @@ class TestNodeTool(MockedClientTest):
         self.nodetool._folders.assert_called_with(BUCKET, s3_path)
         self.nodetool._ensure_dir.assert_called_with('subdirectory')
         self.nodetool._download_file.assert_called_with(
-            BUCKET, '/subdirectory/filename', 'subdirectory')
+            BUCKET, '/subdirectory/filename', KEYSPACE, 'subdirectory')
         self.nodetool._refresh.assert_called_with(KEYSPACE, 'subdirectory')
 
     def test_view(self):
@@ -94,9 +96,9 @@ class TestNodeTool(MockedClientTest):
             's3_path', 'table', 'filename'))
 
     def test_download_file(self):
-        self.nodetool._download_file(BUCKET, 'path/to/filename', 'table')
-        self.s3.download_file.assert_called_with(BUCKET, 'path/to/filename', '%s/%s/%s' % (
-            CASSANDRA_DATA_DIR, 'table', 'filename'))
+        self.nodetool._download_file(BUCKET, 'path/to/filename', KEYSPACE, 'table')
+        self.s3.download_file.assert_called_with(BUCKET, 'path/to/filename', '%s/%s/%s/%s' % (
+            CASSANDRA_DATA_DIR, KEYSPACE, 'table', 'filename'))
 
     @patch('cassandras3.util.nodetool.sh')
     def test_ensure_dir(self, mock_sh):
@@ -133,6 +135,17 @@ test2"""
     def test_snapshot_exception(self, mock_sh):
         mock_sh.nodetool.side_effect = Exception('kaboom')
         self.assertRaises(Exception, self.nodetool._snapshot, KEYSPACE, 'tag')
+
+    @patch('cassandras3.util.nodetool.sh')
+    def test_clearsnapshot(self, mock_sh):
+        self.nodetool._clearsnapshot(KEYSPACE, 'tag')
+        mock_sh.nodetool.assert_called_with(
+            '-h', self.host, '-p', self.port, 'clearsnapshot', '-t', 'tag', KEYSPACE)
+
+    @patch('cassandras3.util.nodetool.sh')
+    def test_clearsnapshot_exception(self, mock_sh):
+        mock_sh.nodetool.side_effect = Exception('kaboom')
+        self.assertRaises(Exception, self.nodetool._clearsnapshot, KEYSPACE, 'tag')
 
     @patch('cassandras3.util.nodetool.sh')
     def test_refresh(self, mock_sh):
