@@ -132,15 +132,20 @@ test2"""
             '-h', self.host, '-p', self.port, 'snapshot', '-t', 'tag', KEYSPACE)
 
     @patch('cassandras3.util.nodetool.sh')
+    def test_snapshot_exception(self, mock_sh):
+        mock_sh.nodetool.side_effect = Exception('kaboom')
+        self.assertRaises(Exception, self.nodetool._snapshot, KEYSPACE, 'tag')
+
+    @patch('cassandras3.util.nodetool.sh')
     def test_clearsnapshot(self, mock_sh):
         self.nodetool._clearsnapshot(KEYSPACE, 'tag')
         mock_sh.nodetool.assert_called_with(
             '-h', self.host, '-p', self.port, 'clearsnapshot', '-t', 'tag', KEYSPACE)
 
     @patch('cassandras3.util.nodetool.sh')
-    def test_snapshot_exception(self, mock_sh):
+    def test_clearsnapshot_exception(self, mock_sh):
         mock_sh.nodetool.side_effect = Exception('kaboom')
-        self.assertRaises(Exception, self.nodetool._snapshot, KEYSPACE, 'tag')
+        self.assertRaises(Exception, self.nodetool._clearsnapshot, KEYSPACE, 'tag')
 
     @patch('cassandras3.util.nodetool.sh')
     def test_refresh(self, mock_sh):
