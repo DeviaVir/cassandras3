@@ -27,7 +27,8 @@ def backup_cmd():  # pragma: no cover
               help='The cassandra keyspace to backup.')
 @click.option('--bucket', prompt='Your s3 bucket to backup to',
               help='The s3 bucket used to place the backup.')
-@click.option('--datadir', default='/var/lib/cassandra/data', prompt='Your cassandra data directory',
+@click.option('--datadir', default='/var/lib/cassandra/data',
+              prompt='Your cassandra data directory',
               help='The cassandra directory where data are stored.')
 def backup(region, host, port, keyspace, bucket, datdir):  # pragma: no cover
     do_backup(region, host, port, keyspace, bucket, datdir)
