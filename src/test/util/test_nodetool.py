@@ -2,7 +2,7 @@ from mock import MagicMock, patch
 
 from botocore.exceptions import ClientError
 
-from cassandras3.util.nodetool import NodeTool, CASSANDRA_DATA_DIR
+from cassandras3.util.nodetool import NodeTool
 from test.aws import MockedClientTest
 
 KEYSPACE = 'testkeyspace'
@@ -98,12 +98,12 @@ class TestNodeTool(MockedClientTest):
     def test_download_file(self):
         self.nodetool._download_file(BUCKET, 'path/to/filename', KEYSPACE, 'table')
         self.s3.download_file.assert_called_with(BUCKET, 'path/to/filename', '%s/%s/%s/%s' % (
-            CASSANDRA_DATA_DIR, KEYSPACE, 'table', 'filename'))
+            '/var/lib/cassandra/data', KEYSPACE, 'table', 'filename'))
 
     @patch('cassandras3.util.nodetool.sh')
     def test_ensure_dir(self, mock_sh):
         self.nodetool._ensure_dir('table')
-        mock_sh.mkdir.assert_called_with('-p', '%s/%s' % (CASSANDRA_DATA_DIR, 'table'))
+        mock_sh.mkdir.assert_called_with('-p', '%s/%s' % ('/var/lib/cassandra/data', 'table'))
 
     @patch('cassandras3.util.nodetool.sh')
     def test_ensure_dir_exception(self, mock_sh):
@@ -115,7 +115,7 @@ class TestNodeTool(MockedClientTest):
         mock_sh.find.return_value = """test1
 test2"""
         dirs = self.nodetool._lookup_snapshots('tag')
-        mock_sh.find.assert_called_with(CASSANDRA_DATA_DIR, '-name', 'tag')
+        mock_sh.find.assert_called_with('/var/lib/cassandra/data', '-name', 'tag')
 
         self.assertEqual(['test1', 'test2'], dirs)
 
