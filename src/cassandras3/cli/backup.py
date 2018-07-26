@@ -30,8 +30,8 @@ def backup_cmd():  # pragma: no cover
 @click.option('--datadir', default='/var/lib/cassandra/data',
               prompt='Your cassandra data directory',
               help='The cassandra directory where data are stored.')
-def backup(region, host, port, keyspace, bucket, datdir):  # pragma: no cover
-    do_backup(region, host, port, keyspace, bucket, datdir)
+def backup(region, host, port, keyspace, bucket, datadir):  # pragma: no cover
+    do_backup(region, host, port, keyspace, bucket, datadir)
 
 
 def do_backup(region, host, port, keyspace, bucket, datadir):
