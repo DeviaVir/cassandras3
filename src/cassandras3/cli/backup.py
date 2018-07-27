@@ -27,11 +27,14 @@ def backup_cmd():  # pragma: no cover
               help='The cassandra keyspace to backup.')
 @click.option('--bucket', prompt='Your s3 bucket to backup to',
               help='The s3 bucket used to place the backup.')
-def backup(region, host, port, keyspace, bucket):  # pragma: no cover
-    do_backup(region, host, port, keyspace, bucket)
+@click.option('--datadir', default='/var/lib/cassandra/data',
+              prompt='Your cassandra data directory',
+              help='The cassandra directory where data are stored.')
+def backup(region, host, port, keyspace, bucket, datadir):  # pragma: no cover
+    do_backup(region, host, port, keyspace, bucket, datadir)
 
 
-def do_backup(region, host, port, keyspace, bucket):
+def do_backup(region, host, port, keyspace, bucket, datadir):
     setup_logging(logging.WARN)
 
     clients = ClientCache(region)
@@ -39,5 +42,5 @@ def do_backup(region, host, port, keyspace, bucket):
 
     timestamp = int(time.time())
 
-    node = NodeTool(clients, hostname, host, port)
+    node = NodeTool(clients, hostname, host, port, datadir)
     node.backup(keyspace, bucket, timestamp)
