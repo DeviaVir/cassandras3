@@ -4,7 +4,7 @@ requires = [req for req in open('requirements.txt').read().splitlines()
             if not req.startswith('git')]
 
 setup(name='cassandras3',
-      version='0.1.3',
+      version='0.1.4',
       description='Cassandra S3 Backup, View and Restore',
       long_description=open('README.md').read(),
       entry_points={
