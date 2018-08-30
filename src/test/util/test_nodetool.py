@@ -42,7 +42,7 @@ class TestNodeTool(MockedClientTest):
         self.nodetool._clearsnapshot.assert_called_with(KEYSPACE, tag)
 
     def test_restore(self):
-        self.nodetool._folders = MagicMock(return_value=[('/subdirectory/keyspace/filename')])
+        self.nodetool._folders = MagicMock(return_value=[('/subdirectory/filename')])
         self.nodetool._ensure_dir = MagicMock()
         self.nodetool._download_file = MagicMock()
         self.nodetool._refresh = MagicMock()
@@ -51,9 +51,9 @@ class TestNodeTool(MockedClientTest):
 
         s3_path = '%s/%s/%s' % (self.hostname, KEYSPACE, TIMESTAMP)
         self.nodetool._folders.assert_called_with(BUCKET, s3_path)
-        self.nodetool._ensure_dir.assert_called_with('subdirectory', 'keyspace')
+        self.nodetool._ensure_dir.assert_called_with('keyspace', 'subdirectory')
         self.nodetool._download_file.assert_called_with(
-            BUCKET, '/subdirectory/keyspac/efilename', KEYSPACE, 'subdirectory')
+            BUCKET, '/subdirectory/filename', KEYSPACE, 'subdirectory')
         self.nodetool._refresh.assert_called_with(KEYSPACE, 'subdirectory')
 
     def test_view(self):
