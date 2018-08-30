@@ -11,7 +11,7 @@ class TestBackupClient(unittest.TestCase):
     def test_backup(self, nodetool_constructor, _):
         self._setup_mocks(nodetool_constructor)
 
-        do_backup('us-east-1', 'localhost', 7119, 'system', 'test', '/var/lib/cassandra/data')
+        do_backup('us-east-1', 'localhost', 7119, 'system', 'test', '/var/lib/cassandra/data', '', '')
 
         self.mock_nodetool.backup.assert_called_with('system', 'test', ANY)
 

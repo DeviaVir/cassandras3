@@ -7,12 +7,14 @@ logger = logging.getLogger('cassandras3')
 
 class NodeTool(object):
     def __init__(self, clients, hostname='localhost', host='127.0.0.1', port=7199,
-                 cassandra_data_dir='/var/lib/cassandra/data'):
+                 cassandra_data_dir='/var/lib/cassandra/data', jmxusername='', jmxpassword=''):
         self.s3 = clients.s3()
         self.hostname = hostname
         self.host = host
         self.port = port
         self.cassandra_data_dir = cassandra_data_dir
+        self.jmxusername = jmxusername
+        self.jmxpassword = jmxpassword
 
     def backup(self, keyspace, bucket, timestamp):
         """
@@ -118,21 +120,31 @@ class NodeTool(object):
 
     def _snapshot(self, keyspace, tag):
         try:
-            sh.nodetool('-h', self.host, '-p', self.port, 'snapshot', '-t', tag, keyspace)
+            if self.jmxusername and self.jmxpassword:
+                sh.nodetool('-u', self.jmxusername, '-pw', self.jmxpassword, '-h', self.host, '-p', self.port, 'snapshot', '-t', tag, keyspace)
+            else:
+                sh.nodetool('-h', self.host, '-p', self.port, 'snapshot', '-t', tag, keyspace)
         except:
             logger.error('Command possibly unfinished due to errors!')
             raise
 
     def _clearsnapshot(self, keyspace, tag):
         try:
-            sh.nodetool('-h', self.host, '-p', self.port, 'clearsnapshot', '-t', tag, keyspace)
+            if self.jmxusername and self.jmxpassword:
+                sh.nodetool('-u', self.jmxusername, '-pw', self.jmxpassword, '-h', self.host, '-p', self.port, 'clearsnapshot', '-t', tag, keyspace)
+            else:
+                sh.nodetool('-h', self.host, '-p', self.port, 'clearsnapshot', '-t', tag, keyspace)
+
         except:
             logger.error('Command possibly unfinished due to errors!')
             raise
 
     def _refresh(self, keyspace, table):
         try:
-            sh.nodetool('-h', self.host, '-p', self.port, 'refresh', keyspace, table)
+            if self.jmxusername and self.jmxpassword:
+                sh.nodetool('-u', self.jmxusername, '-pw', self.jmxpassword, '-h', self.host, '-p', self.port, 'refresh', keyspace, table)
+            else:
+                sh.nodetool('-h', self.host, '-p', self.port, 'refresh', keyspace, table)
         except:
             logger.error('Command possibly unfinished due to errors!')
             raise
