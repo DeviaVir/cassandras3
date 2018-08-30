@@ -51,7 +51,7 @@ class TestNodeTool(MockedClientTest):
 
         s3_path = '%s/%s/%s' % (self.hostname, KEYSPACE, TIMESTAMP)
         self.nodetool._folders.assert_called_with(BUCKET, s3_path)
-        self.nodetool._ensure_dir.assert_called_with('keyspace', 'subdirectory')
+        self.nodetool._ensure_dir.assert_called_with(KEYSPACE, 'subdirectory')
         self.nodetool._download_file.assert_called_with(
             BUCKET, '/subdirectory/filename', KEYSPACE, 'subdirectory')
         self.nodetool._refresh.assert_called_with(KEYSPACE, 'subdirectory')
