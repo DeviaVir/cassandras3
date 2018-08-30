@@ -157,3 +157,15 @@ test2"""
     def test_refresh_exception(self, mock_sh):
         mock_sh.nodetool.side_effect = Exception('kaboom')
         self.assertRaises(Exception, self.nodetool._refresh, KEYSPACE, 'table')
+
+
+class TestNodeToolWithCredentials(TestNodeTool):
+    def setUp(self):
+        super(TestNodeToolWithCredentials, self).setUp()
+        self.hostname = 'localhost'
+        self.host = '127.0.0.1'
+        self.port = 7199
+        self.jmxusername = 'username'
+        self.jmxpassword = 'password'
+        self.nodetool = NodeTool(self.clients, self.hostname, self.host, self.port,
+                                 self.jmxusername, self.jmxpassword)
