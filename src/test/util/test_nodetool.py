@@ -108,7 +108,7 @@ class TestNodeTool(MockedClientTest):
     @patch('cassandras3.util.nodetool.sh')
     def test_ensure_dir_exception(self, mock_sh):
         mock_sh.mkdir.side_effect = Exception('kaboom')
-        self.nodetool._ensure_dir('keyspace', ''table')
+        self.nodetool._ensure_dir('keyspace', 'table')
 
     @patch('cassandras3.util.nodetool.sh')
     def test_lookup_snapshots(self, mock_sh):
