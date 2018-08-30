@@ -16,6 +16,17 @@ class TestBackupClient(unittest.TestCase):
 
         self.mock_nodetool.backup.assert_called_with('system', 'test', ANY)
 
+    @patch('cassandras3.cli.backup.ClientCache')
+    @patch('cassandras3.cli.backup.NodeTool')
+    def test_backup_with_crendentails(self, nodetool_constructor, _):
+        self._setup_mocks(nodetool_constructor)
+
+        do_backup('us-east-1', 'localhost', 7119, 'system', 'test',
+                  '/var/lib/cassandra/data', 'username', 'password')
+
+        self.mock_nodetool.backup.assert_called_with('system', 'test', ANY)
+
+
     def _setup_mocks(self, nodetool_constructor):
         self.mock_nodetool = MagicMock(spec=NodeTool)
         nodetool_constructor.return_value = self.mock_nodetool
