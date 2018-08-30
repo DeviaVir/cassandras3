@@ -33,16 +33,23 @@ def restore_cmd():  # pragma: no cover
 @click.option('--datadir', default='/var/lib/cassandra/data',
               prompt='Your cassandra data directory',
               help='The cassandra directory where data are stored.')
-def restore(region, host, port, backup, keyspace, hostname, bucket, datadir):  # pragma: no cover
-    do_restore(region, host, port, backup, keyspace, hostname, bucket, datadir)
+@click.option('--jmxusername', default='',
+              help='Cassandra JMX username for nodetool')
+@click.option('--jmxpassword', default='',
+              help='Cassandra JMX password for nodetool')
+def restore(region, host, port, backup, keyspace, hostname, bucket, datadir,
+            jmxusername, jmxpassword):  # pragma: no cover
+    do_restore(region, host, port, backup, keyspace, hostname, bucket, datadir,
+               jmxusername, jmxpassword)
 
 
-def do_restore(region, host, port, backup, keyspace, hostname, bucket, datadir):
+def do_restore(region, host, port, backup, keyspace, hostname, bucket, datadir,
+               jmxusername, jmxpassword):
     setup_logging(logging.WARN)
 
     clients = ClientCache(region)
     if not hostname:
         hostname = socket.gethostname()
 
-    node = NodeTool(clients, hostname, host, port, datadir)
+    node = NodeTool(clients, hostname, host, port, datadir, jmxusername, jmxpassword)
     node.restore(keyspace, bucket, backup)

@@ -157,3 +157,33 @@ test2"""
     def test_refresh_exception(self, mock_sh):
         mock_sh.nodetool.side_effect = Exception('kaboom')
         self.assertRaises(Exception, self.nodetool._refresh, KEYSPACE, 'table')
+
+
+class TestNodeToolWithCredentials(TestNodeTool):
+    def setUp(self):
+        super(TestNodeToolWithCredentials, self).setUp()
+        self.hostname = 'localhost'
+        self.host = '127.0.0.1'
+        self.port = 7199
+        self.jmxusername = 'username'
+        self.jmxpassword = 'password'
+        self.nodetool = NodeTool(self.clients, self.hostname, self.host, self.port,
+                                 '/var/lib/cassandra/data', self.jmxusername, self.jmxpassword)
+    @patch('cassandras3.util.nodetool.sh')
+    def test_clearsnapshot(self, mock_sh):
+        self.nodetool._clearsnapshot(KEYSPACE, 'tag')
+        mock_sh.nodetool.assert_called_with('-u', self.jmxusername, '-pw', self.jmxpassword,
+                                            '-h', self.host, '-p', self.port, 'clearsnapshot',
+                                            '-t', 'tag', KEYSPACE)
+    @patch('cassandras3.util.nodetool.sh')
+    def test_refresh(self, mock_sh):
+        self.nodetool._refresh(KEYSPACE, 'table')
+        mock_sh.nodetool.assert_called_with('-u', self.jmxusername, '-pw', self.jmxpassword,
+                                            '-h', self.host, '-p', self.port, 'refresh',
+                                            KEYSPACE, 'table')
+    @patch('cassandras3.util.nodetool.sh')                                            
+    def test_snapshot(self, mock_sh):
+        self.nodetool._snapshot(KEYSPACE, 'tag')
+        mock_sh.nodetool.assert_called_with('-u', self.jmxusername, '-pw', self.jmxpassword,
+                                            '-h', self.host, '-p', self.port, 'snapshot',
+                                            '-t', 'tag', KEYSPACE)
