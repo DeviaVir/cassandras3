@@ -104,7 +104,7 @@ class NodeTool(object):
         try:
             sh.mkdir('-p', '%s/%s' % (self.cassandra_data_dir, table))
         except:
-            logger.warn('Could not create directory!')
+            logger.warning('Could not create directory!')
 
     def _lookup_snapshots(self, tag):
         try:
@@ -112,8 +112,7 @@ class NodeTool(object):
                            '-name',
                            tag)
         except:
-            logger.warn('Unable to execute find, nodetool did not create ' +
-                        'snapshot?')
+            logger.warning('Unable to execute find, nodetool did not create snapshot?')
             dirs = ''
 
         return dirs.splitlines()
