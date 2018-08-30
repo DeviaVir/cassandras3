@@ -34,11 +34,13 @@ def backup_cmd():  # pragma: no cover
               help='Cassandra JMX username for nodetool')
 @click.option('--jmxpassword', default='',
               help='Cassandra JMX password for nodetool')
-def backup(region, host, port, keyspace, bucket, datadir, jmxusername, jmxpassword):  # pragma: no cover
+def backup(region, host, port, keyspace, bucket, datadir,
+           jmxusername, jmxpassword):  # pragma: no cover
     do_backup(region, host, port, keyspace, bucket, datadir, jmxusername, jmxpassword)
 
 
-def do_backup(region, host, port, keyspace, bucket, datadir, jmxusername, jmxpassword):
+def do_backup(region, host, port, keyspace, bucket, datadir,
+              jmxusername, jmxpassword):
     setup_logging(logging.WARN)
 
     clients = ClientCache(region)

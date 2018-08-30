@@ -121,7 +121,8 @@ class NodeTool(object):
     def _snapshot(self, keyspace, tag):
         try:
             if self.jmxusername and self.jmxpassword:
-                sh.nodetool('-u', self.jmxusername, '-pw', self.jmxpassword, '-h', self.host, '-p', self.port, 'snapshot', '-t', tag, keyspace)
+                sh.nodetool('-u', self.jmxusername, '-pw', self.jmxpassword,
+                            '-h', self.host, '-p', self.port, 'snapshot', '-t', tag, keyspace)
             else:
                 sh.nodetool('-h', self.host, '-p', self.port, 'snapshot', '-t', tag, keyspace)
         except:
@@ -131,7 +132,8 @@ class NodeTool(object):
     def _clearsnapshot(self, keyspace, tag):
         try:
             if self.jmxusername and self.jmxpassword:
-                sh.nodetool('-u', self.jmxusername, '-pw', self.jmxpassword, '-h', self.host, '-p', self.port, 'clearsnapshot', '-t', tag, keyspace)
+                sh.nodetool('-u', self.jmxusername, '-pw', self.jmxpassword,
+                            '-h', self.host, '-p', self.port, 'clearsnapshot', '-t', tag, keyspace)
             else:
                 sh.nodetool('-h', self.host, '-p', self.port, 'clearsnapshot', '-t', tag, keyspace)
 
@@ -142,7 +144,8 @@ class NodeTool(object):
     def _refresh(self, keyspace, table):
         try:
             if self.jmxusername and self.jmxpassword:
-                sh.nodetool('-u', self.jmxusername, '-pw', self.jmxpassword, '-h', self.host, '-p', self.port, 'refresh', keyspace, table)
+                sh.nodetool('-u', self.jmxusername, '-pw', self.jmxpassword,
+                            '-h', self.host, '-p', self.port, 'refresh', keyspace, table)
             else:
                 sh.nodetool('-h', self.host, '-p', self.port, 'refresh', keyspace, table)
         except:
