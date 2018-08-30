@@ -36,7 +36,7 @@ def restore_cmd():  # pragma: no cover
 @click.option('--jmxusername', default='',
               help='Cassandra JMX username for nodetool')
 @click.option('--jmxpassword', default='',
-              help='Cassandra JMX password for nodetool')             
+              help='Cassandra JMX password for nodetool')
 def restore(region, host, port, backup, keyspace, hostname, bucket, datadir,
             jmxusername, jmxpassword):  # pragma: no cover
     do_restore(region, host, port, backup, keyspace, hostname, bucket, datadir,
