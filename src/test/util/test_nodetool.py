@@ -103,7 +103,7 @@ class TestNodeTool(MockedClientTest):
     @patch('cassandras3.util.nodetool.sh')
     def test_ensure_dir(self, mock_sh):
         self.nodetool._ensure_dir('keyspace', 'table')
-        mock_sh.mkdir.assert_called_with('-p', '%s/%s' % ('/var/lib/cassandra/data', 'table'))
+        mock_sh.mkdir.assert_called_with('-p', '%s/%s/%s' % ('/var/lib/cassandra/data', 'keyspace', 'table'))
 
     @patch('cassandras3.util.nodetool.sh')
     def test_ensure_dir_exception(self, mock_sh):
