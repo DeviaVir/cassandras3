@@ -168,4 +168,4 @@ class TestNodeToolWithCredentials(TestNodeTool):
         self.jmxusername = 'username'
         self.jmxpassword = 'password'
         self.nodetool = NodeTool(self.clients, self.hostname, self.host, self.port,
-                                 self.jmxusername, self.jmxpassword)
+                                 None, self.jmxusername, self.jmxpassword)
