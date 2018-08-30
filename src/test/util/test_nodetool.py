@@ -168,4 +168,21 @@ class TestNodeToolWithCredentials(TestNodeTool):
         self.jmxusername = 'username'
         self.jmxpassword = 'password'
         self.nodetool = NodeTool(self.clients, self.hostname, self.host, self.port,
-                                 None, self.jmxusername, self.jmxpassword)
+                                 '/var/lib/cassandra/data', self.jmxusername, self.jmxpassword)
+
+    def test_clearsnapshot(self, mock_sh):
+        self.nodetool._clearsnapshot(KEYSPACE, 'tag')
+        mock_sh.nodetool.assert_called_with('-u', self.jmxusername, '-pw', self.jmxpassword,
+                                            '-h', self.host, '-p', self.port, 'clearsnapshot',
+                                            '-t', 'tag', KEYSPACE)
+
+    def test_refresh(self, mock_sh):
+        self.nodetool._refresh(KEYSPACE, 'table')
+        mock_sh.nodetool.assert_called_with('-u', self.jmxusername, '-pw', self.jmxpassword,
+                                            '-h', self.host, '-p', self.port, 'refresh',
+                                            KEYSPACE, 'table')
+    def test_snapshot(self, mock_sh):
+        self.nodetool._snapshot(KEYSPACE, 'tag')
+        mock_sh.nodetool.assert_called_with('-u', self.jmxusername, '-pw', self.jmxpassword,
+                                            '-h', self.host, '-p', self.port, 'snapshot',
+                                            '-t', 'tag', KEYSPACE)
