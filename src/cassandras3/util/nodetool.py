@@ -62,7 +62,7 @@ class NodeTool(object):
             table = filename.split('/')[:-1][-1]
 
             if table not in tables:
-                self._ensure_dir(table)
+                self._ensure_dir(keyspace, table)
                 tables.append(table)
             self._download_file(bucket, filename, keyspace, table)
 
@@ -100,9 +100,9 @@ class NodeTool(object):
         self.s3.download_file(bucket, filename, '%s/%s/%s/%s' % (
             self.cassandra_data_dir, keyspace, table, key))
 
-    def _ensure_dir(self, table):
+    def _ensure_dir(self, keyspace, table):
         try:
-            sh.mkdir('-p', '%s/%s' % (self.cassandra_data_dir, table))
+            sh.mkdir('-p', '%s/%s/%s' % (self.cassandra_data_dir, keyspace, table))
         except:
             logger.warning('Could not create directory!')
 

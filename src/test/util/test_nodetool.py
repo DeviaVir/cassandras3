@@ -51,7 +51,7 @@ class TestNodeTool(MockedClientTest):
 
         s3_path = '%s/%s/%s' % (self.hostname, KEYSPACE, TIMESTAMP)
         self.nodetool._folders.assert_called_with(BUCKET, s3_path)
-        self.nodetool._ensure_dir.assert_called_with('subdirectory')
+        self.nodetool._ensure_dir.assert_called_with(KEYSPACE, 'subdirectory')
         self.nodetool._download_file.assert_called_with(
             BUCKET, '/subdirectory/filename', KEYSPACE, 'subdirectory')
         self.nodetool._refresh.assert_called_with(KEYSPACE, 'subdirectory')
@@ -102,13 +102,13 @@ class TestNodeTool(MockedClientTest):
 
     @patch('cassandras3.util.nodetool.sh')
     def test_ensure_dir(self, mock_sh):
-        self.nodetool._ensure_dir('table')
-        mock_sh.mkdir.assert_called_with('-p', '%s/%s' % ('/var/lib/cassandra/data', 'table'))
+        self.nodetool._ensure_dir('keyspace', 'table')
+        mock_sh.mkdir.assert_called_with('-p', '%s/%s/%s' % ('/var/lib/cassandra/data', 'keyspace', 'table'))
 
     @patch('cassandras3.util.nodetool.sh')
     def test_ensure_dir_exception(self, mock_sh):
         mock_sh.mkdir.side_effect = Exception('kaboom')
-        self.nodetool._ensure_dir('table')
+        self.nodetool._ensure_dir('keyspace', 'table')
 
     @patch('cassandras3.util.nodetool.sh')
     def test_lookup_snapshots(self, mock_sh):
