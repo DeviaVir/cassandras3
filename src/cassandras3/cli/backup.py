@@ -34,13 +34,15 @@ def backup_cmd():  # pragma: no cover
               help='Cassandra JMX username for nodetool')
 @click.option('--jmxpassword', default='',
               help='Cassandra JMX password for nodetool')
+@click.option('--kmskeyid', default='',
+              help='The KMS key id for the bucket S3')
 def backup(region, host, port, keyspace, bucket, datadir,
-           jmxusername, jmxpassword):  # pragma: no cover
-    do_backup(region, host, port, keyspace, bucket, datadir, jmxusername, jmxpassword)
+           jmxusername, jmxpassword, kmskeyid):  # pragma: no cover
+    do_backup(region, host, port, keyspace, bucket, datadir, jmxusername, jmxpassword, kmskeyid)
 
 
 def do_backup(region, host, port, keyspace, bucket, datadir,
-              jmxusername, jmxpassword):
+              jmxusername, jmxpassword, kmskeyid):
     setup_logging(logging.WARN)
 
     clients = ClientCache(region)
@@ -48,5 +50,5 @@ def do_backup(region, host, port, keyspace, bucket, datadir,
 
     timestamp = int(time.time())
 
-    node = NodeTool(clients, hostname, host, port, datadir, jmxusername, jmxpassword)
+    node = NodeTool(clients, hostname, host, port, datadir, jmxusername, jmxpassword, kmskeyid)
     node.backup(keyspace, bucket, timestamp)

@@ -37,19 +37,21 @@ def restore_cmd():  # pragma: no cover
               help='Cassandra JMX username for nodetool')
 @click.option('--jmxpassword', default='',
               help='Cassandra JMX password for nodetool')
+@click.option('--kmskeyid', default='',
+              help='The KMS key id for the bucket S3')
 def restore(region, host, port, backup, keyspace, hostname, bucket, datadir,
-            jmxusername, jmxpassword):  # pragma: no cover
+            jmxusername, jmxpassword, kmskeyid):  # pragma: no cover
     do_restore(region, host, port, backup, keyspace, hostname, bucket, datadir,
-               jmxusername, jmxpassword)
+               jmxusername, jmxpassword, kmskeyid)
 
 
 def do_restore(region, host, port, backup, keyspace, hostname, bucket, datadir,
-               jmxusername, jmxpassword):
+               jmxusername, jmxpassword, kmskeyid):
     setup_logging(logging.WARN)
 
     clients = ClientCache(region)
     if not hostname:
         hostname = socket.gethostname()
 
-    node = NodeTool(clients, hostname, host, port, datadir, jmxusername, jmxpassword)
+    node = NodeTool(clients, hostname, host, port, datadir, jmxusername, jmxpassword, kmskeyid)
     node.restore(keyspace, bucket, backup)

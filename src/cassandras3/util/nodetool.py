@@ -7,7 +7,8 @@ logger = logging.getLogger('cassandras3')
 
 class NodeTool(object):
     def __init__(self, clients, hostname='localhost', host='127.0.0.1', port=7199,
-                 cassandra_data_dir='/var/lib/cassandra/data', jmxusername='', jmxpassword=''):
+                 cassandra_data_dir='/var/lib/cassandra/data', jmxusername='', jmxpassword='',
+                 kmskeyid=''):
         self.s3 = clients.s3()
         self.hostname = hostname
         self.host = host
@@ -15,6 +16,7 @@ class NodeTool(object):
         self.cassandra_data_dir = cassandra_data_dir
         self.jmxusername = jmxusername
         self.jmxpassword = jmxpassword
+        self.kmskeyid = kmskeyid
 
     def backup(self, keyspace, bucket, timestamp):
         """
@@ -91,14 +93,26 @@ class NodeTool(object):
             for item in result.get('Contents'):
                 yield item.get('Key')
 
+    def _s3_extra_args(self):
+        extra_args = dict()
+
+        if self.kmskeyid:
+            extra_args.update({"ServerSideEncryption": "aws:kms", "SSEKMSKeyId": self.kmskeyid})
+
+        return extra_args
+
     def _upload_file(self, local_path, bucket, s3_path, table, filename):
-        self.s3.upload_file(local_path, bucket, '%s/%s/%s' % (
-            s3_path, table, filename))
+        self.s3.upload_file(local_path,
+                            bucket,
+                            '%s/%s/%s' % (s3_path, table, filename),
+                            ExtraArgs=self._s3_extra_args())
 
     def _download_file(self, bucket, filename, keyspace, table):
         key = filename.split('/')[-1]
-        self.s3.download_file(bucket, filename, '%s/%s/%s/%s' % (
-            self.cassandra_data_dir, keyspace, table, key))
+        self.s3.download_file(bucket,
+                              filename,
+                              '%s/%s/%s/%s' % (self.cassandra_data_dir, keyspace, table, key),
+                              ExtraArgs=self._s3_extra_args())
 
     def _ensure_dir(self, keyspace, table):
         try:

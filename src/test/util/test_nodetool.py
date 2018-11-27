@@ -93,12 +93,12 @@ class TestNodeTool(MockedClientTest):
     def test_upload_file(self):
         self.nodetool._upload_file('local_path', BUCKET, 's3_path', 'table', 'filename')
         self.s3.upload_file.assert_called_with('local_path', BUCKET, '%s/%s/%s' % (
-            's3_path', 'table', 'filename'))
+            's3_path', 'table', 'filename'), ExtraArgs={})
 
     def test_download_file(self):
         self.nodetool._download_file(BUCKET, 'path/to/filename', KEYSPACE, 'table')
         self.s3.download_file.assert_called_with(BUCKET, 'path/to/filename', '%s/%s/%s/%s' % (
-            '/var/lib/cassandra/data', KEYSPACE, 'table', 'filename'))
+            '/var/lib/cassandra/data', KEYSPACE, 'table', 'filename'), ExtraArgs={})
 
     @patch('cassandras3.util.nodetool.sh')
     def test_ensure_dir(self, mock_sh):
@@ -157,6 +157,14 @@ test2"""
     def test_refresh_exception(self, mock_sh):
         mock_sh.nodetool.side_effect = Exception('kaboom')
         self.assertRaises(Exception, self.nodetool._refresh, KEYSPACE, 'table')
+
+    def test_s3_extra_args(self):
+        extra_args = self.nodetool._s3_extra_args()
+        self.assertEqual({}, extra_args)
+
+        self.nodetool.kmskeyid = "myKmsKeyId"
+        extra_args2 = self.nodetool._s3_extra_args()
+        self.assertEqual({"ServerSideEncryption": "aws:kms", "SSEKMSKeyId": "myKmsKeyId"}, extra_args2)
 
 
 class TestNodeToolWithCredentials(TestNodeTool):

@@ -12,7 +12,7 @@ class TestBackupClient(unittest.TestCase):
         self._setup_mocks(nodetool_constructor)
 
         do_backup('us-east-1', 'localhost', 7119, 'system', 'test',
-                  '/var/lib/cassandra/data', '', '')
+                  '/var/lib/cassandra/data', '', '', '')
 
         self.mock_nodetool.backup.assert_called_with('system', 'test', ANY)
 
@@ -22,7 +22,7 @@ class TestBackupClient(unittest.TestCase):
         self._setup_mocks(nodetool_constructor)
 
         do_backup('us-east-1', 'localhost', 7119, 'system', 'test',
-                  '/var/lib/cassandra/data', 'username', 'password')
+                  '/var/lib/cassandra/data', 'username', 'password', '')
 
         self.mock_nodetool.backup.assert_called_with('system', 'test', ANY)
 

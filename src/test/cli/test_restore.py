@@ -13,7 +13,7 @@ class TestRestoreClient(unittest.TestCase):
 
         do_restore(
             'us-east-1', 'localhost', 7199, 'backup-id', 'system', 'some-host', 'test',
-            '/var/lib/cassandra/data', '', '')
+            '/var/lib/cassandra/data', '', '', '')
 
         self.mock_nodetool.restore.assert_called_with('system', 'test', 'backup-id')
 
@@ -24,7 +24,7 @@ class TestRestoreClient(unittest.TestCase):
 
         do_restore(
             'us-east-1', 'localhost', 7199, 'backup-id', 'system', '', 'test',
-            '/var/lib/cassandra/data', '', '')
+            '/var/lib/cassandra/data', '', '', '')
 
         self.mock_nodetool.restore.assert_called_with('system', 'test', 'backup-id')
 
@@ -35,7 +35,7 @@ class TestRestoreClient(unittest.TestCase):
 
         do_restore(
             'us-east-1', 'localhost', 7199, 'backup-id', 'system', 'some-host', 'test',
-            '/var/lib/cassandra/data', 'username', 'password')
+            '/var/lib/cassandra/data', 'username', 'password', '')
 
         self.mock_nodetool.restore.assert_called_with('system', 'test', 'backup-id')
     def _setup_mocks(self, nodetool_constructor):
