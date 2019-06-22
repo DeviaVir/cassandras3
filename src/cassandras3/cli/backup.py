@@ -25,8 +25,6 @@ def backup_cmd():  # pragma: no cover
               help='Port of the cassandra host')
 @click.option('--keyspace', prompt='Your keyspace to backup',
               help='The cassandra keyspace to backup.')
-@click.option('--bucket', prompt='Your s3 bucket to backup to',
-              help='The s3 bucket used to place the backup.')
 @click.option('--datadir', default='/var/lib/cassandra/data',
               prompt='Your cassandra data directory',
               help='The cassandra directory where data are stored.')
@@ -34,21 +32,27 @@ def backup_cmd():  # pragma: no cover
               help='Cassandra JMX username for nodetool')
 @click.option('--jmxpassword', default='',
               help='Cassandra JMX password for nodetool')
+@click.option('--bucket', prompt='Your s3 bucket to backup to',
+              help='The s3 bucket used to place the backup.')
 @click.option('--kmskeyid', default='',
               help='The KMS key id for the bucket S3')
-def backup(region, host, port, keyspace, bucket, datadir,
-           jmxusername, jmxpassword, kmskeyid):  # pragma: no cover
-    do_backup(region, host, port, keyspace, bucket, datadir, jmxusername, jmxpassword, kmskeyid)
+@click.option('--s3endpoint', default='',
+              help='Override S3 endpoint for s3 compatible services')
+
+def backup(host, port, keyspace, datadir, jmxusername, jmxpassword,
+         region, bucket, kmskeyid, s3endpoint):  # pragma: no cover
+    do_backup(host, port, keyspace, datadir, jmxusername, jmxpassword, region, bucket, kmskeyid, s3endpoint)
 
 
-def do_backup(region, host, port, keyspace, bucket, datadir,
-              jmxusername, jmxpassword, kmskeyid):
-    setup_logging(logging.WARN)
+def do_backup(host, port, keyspace, datadir, jmxusername, jmxpassword,
+              region, bucket, kmskeyid, s3endpoint):
 
-    clients = ClientCache(region)
+    setup_logging(logging.DEBUG)
+    clients = ClientCache(region, s3endpoint)
     hostname = socket.gethostname()
 
-    timestamp = int(time.time())
+    timestamp = time.strftime("%Z-%Y-%m-%d-%H:%M:%S", time.localtime())
 
     node = NodeTool(clients, hostname, host, port, datadir, jmxusername, jmxpassword, kmskeyid)
     node.backup(keyspace, bucket, timestamp)
+

@@ -27,9 +27,10 @@ class NodeTool(object):
         """
         logger.debug('Backing up cassandra "%s" to bucket "%s"',
                      keyspace, bucket)
-
         tag = '%s-%s-%s' % (self.hostname, keyspace, timestamp)
         s3_path = '%s/%s/%s' % (self.hostname, keyspace, timestamp)
+
+        logger.debug('s3 path is %s', s3_path)
 
         self._snapshot(keyspace, tag)
 

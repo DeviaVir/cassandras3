@@ -32,3 +32,6 @@ composetest:
 	docker-compose run test
 
 .PHONY: composetest test
+
+dev-install:
+	pip install --editable .

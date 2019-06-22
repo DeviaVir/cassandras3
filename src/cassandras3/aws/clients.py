@@ -10,9 +10,10 @@ class ClientCache(object):
     Lazy instantiation container for AWS clients.
     """
 
-    def __init__(self, region):
+    def __init__(self, region, endpoint=''):
         self._clients = {}
         self.region = region
+        self.endpoint = endpoint
 
     def s3(self):
         """
@@ -27,6 +28,10 @@ class ClientCache(object):
             return cached
         region = region or self.region
         logger.debug('Connecting to %s in %s.', service_name, region)
-        client = boto3.client(service_name, region)
+        if self.endpoint:
+            client = boto3.client(service_name, region, endpoint_url=self.endpoint)
+        else:
+            client = boto3.client(service_name, region)
+
         self._clients[service_name] = client
         return client
