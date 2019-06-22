@@ -27,7 +27,7 @@ class ClientCache(object):
         if cached:
             return cached
         region = region or self.region
-        logger.debug('Connecting to %s in %s.', service_name, region)
+        logger.debug('Connecting to %s in %s at %s.', service_name, self.endpoint, region)
         if self.endpoint:
             client = boto3.client(service_name, region, endpoint_url=self.endpoint)
         else:

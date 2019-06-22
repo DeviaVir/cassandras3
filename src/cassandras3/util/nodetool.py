@@ -2,6 +2,8 @@ import logging
 import os
 import sh
 
+from botocore.exceptions import ClientError
+
 logger = logging.getLogger('cassandras3')
 
 
@@ -44,7 +46,7 @@ class NodeTool(object):
                         local_path, bucket, s3_path, table, filename)
 
         print('Successfully backed up your cassandra keyspace with backup' +
-              ' ID "%s"!' % timestamp)
+              ' ID "%s"' % timestamp)
 
         self._clearsnapshot(keyspace, tag)
 
@@ -103,17 +105,22 @@ class NodeTool(object):
         return extra_args
 
     def _upload_file(self, local_path, bucket, s3_path, table, filename):
-        self.s3.upload_file(local_path,
-                            bucket,
-                            '%s/%s/%s' % (s3_path, table, filename),
-                            ExtraArgs=self._s3_extra_args())
+        try:
+            self.s3.upload_file(local_path,
+                                bucket,
+                                '%s/%s/%s' % (s3_path, table, filename),
+                                ExtraArgs=self._s3_extra_args())
+        except ClientError as e:
+            logger.error(e)
+            return False
+        return True
 
     def _download_file(self, bucket, filename, keyspace, table):
         key = filename.split('/')[-1]
         self.s3.download_file(bucket,
-                              filename,
-                              '%s/%s/%s/%s' % (self.cassandra_data_dir, keyspace, table, key),
-                              ExtraArgs=self._s3_extra_args())
+                filename,
+                '%s/%s/%s/%s' % (self.cassandra_data_dir, keyspace, table, key),
+                ExtraArgs=self._s3_extra_args())
 
     def _ensure_dir(self, keyspace, table):
         try:
