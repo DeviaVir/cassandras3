@@ -39,17 +39,24 @@ def restore_cmd():  # pragma: no cover
               help='Cassandra JMX password for nodetool')
 @click.option('--kmskeyid', default='',
               help='The KMS key id for the bucket S3')
+@click.option('--s3endpoint', default='',
+        help='Override S3 endpoint for s3 compatible services')
+@click.option('--loglevel',
+        type=click.Choice(['NOTSET', 'DEBUG', 'INFO','WARNING', 'ERROR', 'CRITICAL']),
+        default='WARNING', help='Set log level for application')
+
 def restore(region, host, port, backup, keyspace, hostname, bucket, datadir,
-            jmxusername, jmxpassword, kmskeyid):  # pragma: no cover
+            jmxusername, jmxpassword, kmskeyid, s3endpoint, loglevel):  # pragma: no cover
     do_restore(region, host, port, backup, keyspace, hostname, bucket, datadir,
-               jmxusername, jmxpassword, kmskeyid)
+               jmxusername, jmxpassword, kmskeyid,
+               s3endpoint, loglevel)
 
 
 def do_restore(region, host, port, backup, keyspace, hostname, bucket, datadir,
-               jmxusername, jmxpassword, kmskeyid):
-    setup_logging(logging.WARN)
-
-    clients = ClientCache(region)
+               jmxusername, jmxpassword, kmskeyid,
+               s3endpoint, loglevel):
+    setup_logging(logging.getLevelName(loglevel))
+    clients = ClientCache(region, s3endpoint)
     if not hostname:
         hostname = socket.gethostname()
 

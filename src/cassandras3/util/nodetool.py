@@ -120,7 +120,7 @@ class NodeTool(object):
                 ExtraArgs=self._s3_extra_args())
 
     def _ensure_dir(self, keyspace, table):
-        logger.debug('Ensuring directory {} exists'.format(self.cassandra_data_dir + keyspace + table + key))
+        logger.debug('Ensuring directory {}/{}/{} exists'.format(self.cassandra_data_dir, keyspace, table))
         try:
             sh.mkdir('-p', '%s/%s/%s' % (self.cassandra_data_dir, keyspace, table))
         except:
