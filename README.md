@@ -39,16 +39,29 @@ Make sure `cassandra` is running, `nodetool` requires it.
 
 #### Backup
 
+##### For s3
 ```
 cassandras3 backup --keyspace test --bucket test [--region us-east-1]
 ```
-
 Note: `[--region us-east-1]` is optional, it is to cache the AWS client API's per region.
+
+##### For some s3 compatible endpoint
+```
+cassandras3 backup 'UTC-2019-06-26-16:28:26' --keyspace test --bucket test --s3endpoint https://sgp1.digitaloceanspaces.com --region sgp1 --datadir /usr/local/var/lib/cassandra/data/ --hostname 'cassandra-seed' --loglevel DEBUG
+```
+
 
 #### View
 
+##### For s3
 ```
 cassandras3 view --keyspace test --hostname test --bucket test [--region us-east-1]
+```
+
+##### For some s3 compatible endpoint
+```
+cassandras3 view --bucket test --keyspace clenet1 --s3endpoint https://sgp1.digitaloceanspaces.com --region sgp1 --hostname 'cassandra-seed'
+
 ```
 
 This will return a list of all available backups to restore from.
@@ -58,8 +71,14 @@ Note: you do not need to specify the hostname, it is useful if you want to list 
 
 #### Restore
 
+##### For s3
 ```
 cassandras3 restore --backup backup-timestamp --hostname test --keyspace test --bucket test [--region us-east-1]
+```
+
+##### For some s3 compatible endpoint
+```
+cassandras3 restore --backup 'UTC-2019-06-26-16:28:26' --keyspace test --bucket test --s3endpoint https://sgp1.digitaloceanspaces.com --region sgp1 --datadir /usr/local/var/lib/cassandra/data/ --hostname 'cassandra-seed' --loglevel DEBUG
 ```
 
 Note: `backup-timestamp` can be retrieved via `cassandras3 view`.

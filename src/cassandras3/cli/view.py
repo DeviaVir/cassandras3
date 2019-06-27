@@ -24,14 +24,24 @@ def view_cmd():  # pragma: no cover
               help='The hostname to use for viewing backups.')
 @click.option('--bucket', prompt='Your s3 bucket to view from',
               help='The s3 bucket used to fetch the view from.')
-def view(region, keyspace, hostname, bucket):  # pragma: no cover
-    do_view(region, keyspace, hostname, bucket)
+@click.option('--s3endpoint', default='',
+        help='Override S3 endpoint for s3 compatible services')
+@click.option('--loglevel',
+        type=click.Choice(['NOTSET', 'DEBUG', 'INFO','WARNING', 'ERROR', 'CRITICAL']),
+        default='WARNING', help='Set log level for application')
+
+def view(
+        region, keyspace, hostname, bucket,
+        s3endpoint, loglevel):
+    do_view(region, keyspace, hostname, bucket, s3endpoint, loglevel)
 
 
-def do_view(region, keyspace, hostname, bucket):
-    setup_logging(logging.WARN)
+def do_view(
+        region, keyspace, hostname, bucket,
+        s3endpoint, loglevel):
+    setup_logging(logging.getLevelName(loglevel))
 
-    clients = ClientCache(region)
+    clients = ClientCache(region, s3endpoint)
     if not hostname:
         hostname = socket.gethostname()
 
